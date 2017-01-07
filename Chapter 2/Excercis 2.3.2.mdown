@@ -1,0 +1,146 @@
+#Chapter 2.3.2 Pointer
+##Excercis 2.3.2 
+###2.18: Write code to change the value of a pointer. Write code to change the value to which the pointer points.
+```C++
+int ival1 = 1, ival2 = 2;
+int *ptr = &ival1; //initialize int type pointer ptr's value to be the address of ival1
+ptr = &ival2; //change the value of ptr
+*ptr = 3; //change the value to which the pointer points
+```
+###2.19: Explain the key differences between pointers and references.
+**key differences:**<br>
+1. Pointer is an object in its own right.<br>
+   Reference is an alias for another already exisiting object. (implies it must be initialied) <br>
+2. Once initialzed, reference is bounded to that one object and never can be unbinded.<br>
+   Pointer can be assigned and copied.<br>
+   That is, over their life time, pointer can points to several different objects and reference always gets its inital object.<br>
+3. Reference must be initalized.<br>
+   Pointer need not be.<br>
+###2.20: What does the following program do?
+```C++
+int i = 42;
+int *p1 = &i;
+*p1 = *p1 * *p1;
+```
+Initialize varible i as int object with value 42.<br>
+Initialize varible p1 as int type pointer object whose value is the address of i.<br>
+Change the value to which p1 points to the result of the product of the values to which p1 points. (That is change i to i * i) <br>
+###2.21: Explain each of the following definitions. Indicate whether any are illegal and, if so, why.
+```C++
+int i = 0;
+```
+####(a) double* dp = &i;
+illegal, different type
+####(b) int *ip = i;
+illegal, cannot assgin an int to pointer
+####(c) int *p = &i;
+legal
+###2.22: Assuming p is a pointer to int, explain the following code:
+```C++
+if (p) // ...
+if (*p) // ...
+```
+if p is not nullptr, then do ...<br>
+if the value to which p points does not equal to false, then do...<br>
+###2.23: Given a pointer p, can you determine whether p points to a valid object? If so, how? If not, why not?
+No, more infomation needed.
+###2.24: Why is the initialization of p legal but that of lp illegal?
+```C++
+int i = 42;
+void *p = &i;
+long *lp = &i;
+```
+Type of p in void, meaning it can points to any type object.<br>
+Type of lp differs type of i and for type safty, C++ forbids implicit conversions like `long *lp = &i;`
+
+##Notes
+####Pointer Definition: **A pointer is a compound type that “points to” another type. Like references, pointers are used for indirect access to other objects.**
+**key differences with reference:**<br>
+(1) Pointer is an object in its own right.<br>
+    Reference is an alias for another already exisiting object. (implies it must be initialied) <br>
+(2) Once initialzed, reference is bounded to that one object and never can be unbinded.<br>
+    Pointer can be assigned and copied.<br>
+    That is, over their life time, pointer can points to several different objects and reference always gets its inital object.<br>
+(3) Reference must be initalized.<br>
+    Pointer need not be.<br>
+###Pointer Rules
+```C++
+int ival = 42, ival2 = 2;
+int *p = &ival; // here & is the **address-of** operator
+int *p2 = ival; // error: cannot assgin an int to pointer
+double dval;
+double *pd = &dval; // ok: initializer is the address of a double
+double *pd2 = pd; // ok: initializer is a pointer to double
+int *pi = pd; // error: types of pi and pd differ. 
+pi = &dval; // error: assigning the address of a double to a pointer to int
+
+cout << *pi; // * is the **dereference** operator
+*p = 1; // change ival to 1
+p = &ival2; // point p to ival2;
+```
+The reasaon that **the types must match** is that the type of the pointer is used to infer the type of the object to which the pointer points. If a pointer addressed an object of another type, operations performed on the underlying object would fail. Also, C++ forbids implicit conversions such as ```int i = 42; long *lp = &i;``` for type safety.<br>
+###Pointer Value
+The value (i.e., the address) stored in a pointer can be in one of four states:<br>
+1. It can point to an object.<br>
+2. It can point to the location just immediately past the end of an object.<br>
+3. It can be a null pointer, indicating that it is not bound to any object.<br>
+4. It can be invalid; values other than the preceding three are invalid.<br>
+###Distinctions
+```C++
+int i = 42;
+int &r = i; // & follows a type and is part of a declaration; r is a
+reference
+int *p; // * follows a type and is part of a declaration; p is a
+pointer
+p = &i; // & is used in an expression as the address-of operator
+*p = i; // * is used in an expression as the dereference operator
+int &r2 = *p; // & is part of the declaration; * is the dereference operator
+```
+###Null pointers
+####A null pointer does not point to any object.
+```C++
+int *p1 = nullptr; // equivalent to int *p1 = 0;
+int *p2 = 0; // directly initializes p2 from the literal constant 0
+// must #include cstdlib
+int *p3 = NULL; // equivalent to int *p3 = 0;
+
+// It is illegal to assign an int variable to a pointer, even if the variable’s value happens to be 0.
+int zero = 0;
+pi = zero; // error: cannot assign an int to a pointer
+```
+###Assignment and Pointers
+```C++
+int i = 42;
+int *pi = 0; // pi is initialized but addresses no object
+int *pi2 = &i; // pi2 initialized to hold the address of i
+int *pi3; // if pi3 is defined inside a block, pi3 is uninitialized
+pi3 = pi2; // pi3 and pi2 address the same object, e.g., i
+pi2 = 0; // pi2 now addresses no object
+
+pi = &ival; // value in pi is changed; pi now points to ival
+
+*pi = 0; // value in ival is changed; pi is unchanged
+
+int ival = 1024;
+int *pi = 0; // pi is a valid, null pointer
+int *pi2 = &ival; // pi2 is a valid pointer that holds the address of ival
+if (pi) // pi has value 0, so condition evaluates as false
+// ...
+if (pi2) // pi2 points to ival, so it is not 0; the condition evaluates as true
+// ...
+```
+**Two pointers are equal if they hold the same address and unequal otherwise.<br>**
+Two pointers hold the same address (i.e., are equal) **if they are both null**, **if they address the same object**, or **if they are both pointers one past the same object**. Note that it is possible for a pointer to an object and a pointer one past the end of a different object to hold the same address. Such pointers will compare equal.
+###Void* Pointers
+####The type void* is a special pointer type that can hold the address of any object. Like any other pointer, a void* pointer holds an address, but the type of the object at that address is unknown:
+```C++
+double obj = 3.14, *pd = &obj; // ok: void* can hold the address value of any data pointer type
+void *pv = &obj; // obj can be an object of any type
+pv = pd; // pv can hold a pointer to any type
+```
+With void* pointer, we can:<br>
+1. compare it to another pointer<br>
+2. pass it to or return it from a function<br>
+3. assign it to another void* pointer<br>
+####Note:
+We cannot use a void* to operate on the object it addresses—we don’t know that object’s type, and the type determines what operations we can perform on the object. Generally, we use a void* pointer to deal with memory as memory, rather than using the pointer to access the object stored in that memory.

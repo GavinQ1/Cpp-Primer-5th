@@ -1,0 +1,43 @@
+#Chapter 2.3.1 Reference
+##Excercis 2.3.1 
+###2.15: Which of the following definitions, if any, are invalid? Why?
+####(a) int ival = 1.02;
+legal
+####(b) int &rval1 = 1.02;
+illegal, must be an object and int type
+####(c) int &rval2 = ival;
+legal
+####(d) int &rval3;
+illegal, must be initialized
+###2.16: Which, if any, of the following assignments are invalid? If they are valid, explain what they do.
+```C++
+int i = 0, &r1 = i; double d = 0, &r2 = d;
+```
+####(a) r2 = 3.14159;
+valid
+####(b) r2 = r1;
+valid, automatic convert will happen
+####(c) i = r2;
+valid, but will be truncated
+####(d) r1 = d;
+valid, but will be truncated
+###2.17: What does the following code print?
+```C++
+int i, &ri = i;
+i = 5; ri = 10;
+std::cout << i << " " << ri << std::endl;
+```
+10 10
+##Notes:
+####Reference Definition: **A reference defines an alternative name for an object. A reference type “refers to” another type. We define a reference type by writing a declarator of the form &d, where d is the name being declared**
+A Reference Is an Alias. A reference is not an object. Instead, a reference is just another name for an already existing object.<br>
+When is defined:<br>
+(a) must be initialized<br>
+(b) must be referred to same type object<br>
+After a reference has been defined, all operations on that reference are actually operations on the object to which the reference is bound<br>
+**The type of a reference and the object to which the reference refers must match exactly. (With two exceptions)**<br>
+1 We can initialize a reference to const from any expression that can be converted to the type of the reference. In particular, we can bind a reference to const to a nonconst object, a literal, or a more general expression.<br>
+```C++
+int i = 1, &r1 = i, &r2 = 1; // r2 illegal, must refer to an object
+const int &r3 = 42, &r4 = i; // legal (exception case 1)
+```

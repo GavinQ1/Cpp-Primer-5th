@@ -1,0 +1,21 @@
+#Chapter 2.4.2 *const* Pointers
+##Note
+Pointers are objects. Hence, pointers can be itself itself const. Like other objects, *const* pointers must be initialized. Once it points to an address, where it points to cannot be changed. We indicate that the pointer is *const* by putting * in front of *const*
+```C++
+int errNumb = 0;
+int *const curErr = &errNumb; // curErr will always point to errNumb
+const double pi = 3.14159;
+const double *const pip = &pi; // pip is a const pointer to a const object
+```
+With pointer itself being const says nothing about whether we can use the pointer to change the underlying object, that is, whether we can change the underlying object depends on the type (const or non const) of that underlying object.
+```C++
+*pip = 2.72; // error: pip is a pointer to const
+
+// if the object to which curErr points (i.e., errNumb) is nonzero
+if (*curErr) {
+	errorHandler();
+	*curErr = 0; // ok: reset the value of the object to which curErr is bound
+} else {
+	*curErr++; // ok
+} 
+```

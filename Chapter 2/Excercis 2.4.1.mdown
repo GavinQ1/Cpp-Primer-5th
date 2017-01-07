@@ -1,0 +1,81 @@
+#Chapter 2.4.1 *const* Qualifier and References to *const*
+##Excercis 2.4.1
+
+###Exercise 2.26: Which of the following are legal? For those that are illegal, explain why.
+```C++
+(a) const int buf; // invalid, must be initialized
+(b) int cnt = 0; // valid
+(c) const int sz = cnt; // valid 
+(d) ++cnt; ++sz; // valid; invalid, must not be modified once initialized
+```
+
+##Notes
+###Intro to *const*
+*const* variables must be initialized and cannot be modified once initialized. By default, const Objects are local to file, and to share them, you must define them also as *extern*. **const in reference types is always low-level** (reference is not an object, obiviously not top-level)
+```C++
+const int k1, k2, k3; // all are const
+const int i = get_size(); // ok: initialized at run time
+const int j = 42; // ok: initialized at compile time
+const int k; // error: k is uninitialized const
+int i = 42;
+const int ci = i; // ok: the value in i is copied into ci
+int j = ci; // ok: the value in ci is copied into j
+ci = j; // error: ci must not be modified
+
+// file_1.cc defines and initializes a const that is accessible to other files
+extern const int bufSize = fcn();
+// file_1.h
+extern const int bufSize; // same bufSize as defined in file_1.cc
+```
+###References to *const*
+Unlike an ordinary reference, a reference to *const* cannot be used to change the object to which the reference is bound.
+```C++
+const int ci = 1024;
+const int &r1 = ci; // ok: both reference and underlying object are const
+r1 = 42; // error: r1 is a reference to const
+int &r2 = ci; // error: non const reference to a const object
+```
+###Terminology: 
+*const* Reference is a Reference to *const*:<br>
+C++ programmers tend to abbreviate the phrase “reference to const” as “const reference.” This abbreviation makes sense—if you remember that it is an abbreviation.<br>
+Because once a reference is initialized, we cannot rebind it to another object, in this sense, all references are *const*. However, a const reference differs with a non-const reference in what we can do with that reference, not whether we can alter the binding of the reference itself.<br>
+
+###Initialization and References to *const*
+The first exception is that we can initialize a reference to const from any expression that can be converted to the type of the reference. In particular, we can bind a reference to const to a nonconst object, a literal, or a more general expression
+```C++
+int i = 42;
+const int &r1 = i; // we can bind a const int& to a plain int object
+const int &r2 = 42; // ok: r1 is a reference to const
+const int &r3 = r1 * 2; // ok: r3 is a reference to const
+int &r4 = r * 2; // error: r4 is a plain, non const reference **(type not matching)**
+
+double dval = 3.14;
+const int &ri = dval; 
+/*
+Here what the compiler actually does is that:
+const int temp = dval; // create a temporary const int from the double
+const int &ri = temp; // bind ri to that temporary
+
+So if you change dval, nothing will happend to ri.
+cout << ri; // 3
+dval = 2;
+cout << ri; // 3 
+*/
+```
+###A Reference to const May Refer to an Object That Is Not const
+***It is important to realize that a reference to const restricts only what we can do through that reference. Binding a reference to const to an object says nothing about whether the underlying object itself is const.***
+```C++
+int i = 1;
+const int &ri = i;
+cout << ri; // 1
+int i = 2;
+cout << ri; // 2 
+
+// that is 
+int i = 42;
+int &r1 = i; // r1 bound to i
+const int &r2 = i; // r2 also bound to i; but cannot be used to change i
+r1 = 0; // r1 is not const; i is now 0
+r2 = 0; // error: r2 is a reference to const
+```
+
