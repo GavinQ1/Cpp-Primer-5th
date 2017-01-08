@@ -1,4 +1,4 @@
-#Chapter 2.4.3. Top-Level const
+#Chapter 2.4.3 Top-Level const
 ##Excercis 2.4.3 
 ###Exercise 2.27: Which of the following initializations are legal? Explain why.
 ```C++

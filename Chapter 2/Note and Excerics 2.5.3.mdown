@@ -1,0 +1,69 @@
+#Chapter 2.5.3 The decltype Type Specifier
+##Exercise 2.5.3
+###Exercise 2.36: In the following code, determine the type of each variable and the value each variable has when the code finishes:
+```C++
+int a = 3, b = 4;
+decltype(a) c = a; // int c = 3;
+decltype((b)) d = a; // int &d = a;
+++c; // c = 4
+++d; // a = 4
+```
+###Exercise 2.37: Assignment is an example of an expression that yields a reference type. The type is a reference to the type of the left-hand operand. That is, if i is an int, then the type of the expression i = x is int&. Using that knowledge, determine the type and value of each variable in this code:
+```C++
+int a = 3, b = 4;
+decltype(a) c = a; // int c = a;
+decltype(a = b) d = a; // int &d = a;
+```
+###Exercise 2.38: Describe the differences in type deduction between decltype and auto. Give an example of an expression where auto and decltype will deduce the same type and an example where they will deduce differing types.
+Differnces:<br>
+1 top-level const
+```C++
+const int i = 1;
+auto a = i; // int a = i;
+decltype(i) d = i; // const int d = i;
+```
+2 references, decltype can give reference type
+```C++
+int i = 1, &r = i;
+auto a = r; // int a = i;
+decltype(r) d = i; // int &d = i;
+```
+3 the deduction done by decltype depends on the form of its given expression<br>
+
+Same type case:
+```C++
+int i = 1;
+auto a = i;
+decltype(i) d = i;
+```
+
+##Note
+Sometimes we want to define a variable with a type that the compiler deduces from an expression but do not want to use that expression to initialize the variable. Here we use *decltype*.
+**It is worth noting that decltype is the only context in which a variable defined as a reference is not treated as a synonym for the object to which it refers.**<br>
+The way decltype handles top-level const and references differs subtly from the way auto does. When the expression to which we apply decltype is a variable, decltype returns the type of that variable, including top-level const and references:
+```C++
+decltype(f()) sum = x; // sum has whatever type f returns
+
+const int ci = 0, &cj = ci;
+decltype(ci) x = 0; // x has type const int
+decltype(cj) y = x; // y has type const int& and is bound to x
+decltype(cj) z; // error: z is a reference and must be initialized
+```
+###decltype and References
+When we apply decltype to an expression that is not a variable, we get the type that that expression yields. Some expressions will cause decltype to yield a reference type. Generally speaking, decltype returns a reference type for expressions that yield objects that can stand on the left-hand side of the assignment.<br>
+```C++
+// decltype of an expression can be a reference type
+int i = 42, *p = &i, &r = i;
+decltype(r + 0) b; // ok: addition yields an int; b is an (uninitialized) int
+decltype(*p) c; // error: c is int& and must be initialized
+decltype(p) dp = &i; ok
+```
+Another important difference between decltype and auto is that the deduction done by decltype depends on the form of its given expression.
+When we apply decltype to a variable without any parentheses, we get the type of that variable. If we wrap the variable’s name in one or more sets of parentheses, the compiler will evaluate the operand as an expression. A variable is an expression that can be the left-hand side of an assignment. As a result, decltype on such an expression yields a reference:
+```C++
+// decltype of a parenthesized variable is always a reference
+decltype((i)) d; // error: d is int& and must be initialized
+decltype(i) e; // ok: e is an (uninitialized) int 
+```
+###Warning
+Remember that decltype((variable)) (note, double parentheses) is always a reference type, but decltype(variable) is a reference type only if variable is a reference.

@@ -1,0 +1,54 @@
+#Chapter 2.5.2 The auto Type Specifier
+##Exercise 2.5.2
+###Exercise 2.33: Using the variable definitions from this section, determine what happens in each of these assignments:
+```C++
+a = 42; // a = 42
+b = 42; // b = 42
+c = 42; // c = 42
+d = 42; // error, *d = 42;
+e = 42; // error, e = &c;
+g = 42; // error
+```
+###Exercise 2.35: Determine the types deduced in each of the following definitions. Once you’ve figured out the types, write a program to see whether you were correct.
+```C++
+const int i = 42; 
+auto j = i; // int, drop the top-level const  
+const auto &k = i; // const int &
+auto *p = &i; // pointer to a const int 
+const auto j2 = i, &k2 = i; // j2, const int; k2, const int &
+```
+##Note
+```C++
+auto i = 0, *p = &i; // ok: i is int and p is a pointer to int
+auto sz = 0, pi = 3.14; // error: inconsistent types for sz and pi
+```
+###Compound Types, const, and auto
+First, when we use a reference, we are really using the object to which the reference refers. In particular, when we use a reference as an initializer, the initializer is the corresponding object.<br>
+Second, auto ordinarily ignores top-level consts and low-level consts, such as when an initializer is a pointer to const, are kept. If we want the deduced type to have a top-level const, we must say so explicitly.<br>
+
+```C++
+int i = 0, &r = i;
+auto a = r; // a is an int (r is an alias for i, which has type int)
+
+const int ci = i, &cr = ci;
+auto b = ci; // b is an int (top-level const in ci is dropped)
+auto c = cr; // c is an int (cr is an alias for ci whose const is top-level)
+auto d = &i; // d is an int*(& of an int object is int*)
+auto e = &ci; // e is const int*(& of a const object is low-level const)
+
+const auto f = ci; // deduced type of ci is int; f has type const int
+```
+We can also specify that we want a reference to the auto-deduced type.
+```C++
+auto &g = ci; // g is a const int& that is bound to ci
+auto &h = 42; // error: we can't bind a plain reference to a literal
+const auto &j = 42; // ok: we can bind a const reference to a literal
+```
+***it is important to remember that a reference or pointer is part of a particular declarator and not part of the base type for the declaration. As usual, the initializers must provide consistent auto-deduced types:***
+```C++
+auto k = ci, &l = i; // k is int; l is int&
+auto &m = ci, *p = &ci; // m is a const int&;p is a pointer to const int
+
+auto &n = i, *p2 = &ci; // error: type deduced from i is int; type deduced from &ci is const int
+const auto *p2 = &ci; // correct version
+```

@@ -1,0 +1,41 @@
+#Chapter 2.4.4 *constexpr* and Constant Expressions
+##Exercise 2.4.4
+###Exercise 2.32: Is the following code legal or not? If not, how might you make it legal?
+```C++
+int null = 0, *p = null; // illegal, *p = &null;
+```
+##Note
+###constant expression
+A constant expression is an expression whose value cannot change and that can be evaluated at compile time.
+```C++
+const int max_files = 20; // max_files is a constant expression
+const int limit = max_files + 1; // limit is a constant expression
+int staff_size = 27; // staff_size is not a constant expression
+const int sz = get_size(); // sz is not a constant expressions
+```
+###constexpr Variables (C++ 11)
+Variables declared as constexpr are implicitly const and must be initialized by constant expressions:
+```C++
+constexpr int mf = 20; // 20 is a constant expression
+constexpr int limit = mf + 1; // mf + 1 is a constant expression
+constexpr int sz = size(); // ok only if size is a constexpr function
+```
+###Best Practices
+Generally, it is a good idea to use constexpr for variables that you intend to use as constant expressions.
+###Literal Types
+The types we can use in a constexpr are known as “literal types” because they are simple enough to have literal values.
+(e.g. the arithmetic, reference, and pointer types)<br>
+Although we can define both pointers and reference as constexprs, the objects we use to initialize them are strictly limited. We can initialize a constexpr pointer from the nullptr literal or the literal (i.e., constant expression) 0. We can also point to (or bind to) an object that remains at a fixed address.
+```C++
+const int *p = nullptr; // p is a pointer to a const int
+constexpr int *q = nullptr; // q is a const pointer to int
+```
+Despite appearances, the types of p and q are quite different; *p is a pointer to const, whereas q is a constant pointer.* The difference is a consequence of the fact that constexpr imposes a top-level const (§ 2.4.3, p. 63) on the objects it defines.
+```C++
+constexpr int *np = nullptr; // np is a constant pointer to int that is null
+int j = 0;
+constexpr int i = 42; // type of i is const int
+// i and j must be defined outside any function
+constexpr const int *p = &i; // p is a constant pointer to the const int i
+constexpr int *p1 = &j; // p1 is a constant pointer to the int j
+```
